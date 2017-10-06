@@ -1,0 +1,75 @@
+---
+title: "Practice Test"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(Lahman)
+library(sqldf)
+library(ggplot2)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Salaries 
+
+```{r}
+#extracting the data ---------
+query<-"SELECT salary
+FROM Salaries"
+ 
+result<-sqldf(query)
+
+#visualizing the data ------
+
+ggplot()+
+  geom_histogram(data=result,aes(x=salary),bins=40)+
+  ggtitle("Salaries for Baseball Players")+
+  xlab('Salaries')
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Time Series Plot
+
+```{r}
+#extracting the data ---------
+
+query<-"SELECT yearID, avg(salary) AS avg_salary
+FROM Salaries
+GROUP BY yearID"
+
+result<-sqldf(query)
+
+#visualizing the data --------
+
+ggplot()+
+  geom_line(data=result,aes(x=yearID,y=avg_salary))+
+  geom_point(data=result,aes(x=yearID,y=avg_salary))
+  
+```
+
+### Histogram
+
+```{r}
+#extracting the data-------
+query<-"SELECT salary, HR
+FROM Salaries INNER JOIN Batting
+ON Batting.playerID=Salaries.playerID
+WHERE HR>=10"
+
+result<-sqldf(query)
+
+#visualizing the data-------
+
+ggplot()+
+  geom_point(data=result,aes(x=salary,y=HR))
+
+```
+
